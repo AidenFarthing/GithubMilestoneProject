@@ -1,13 +1,22 @@
 package com.sparta.steps;
 
 import com.sparta.graphql.TestBase;
+import com.sparta.utils.GitHubRestClient;
+import io.cucumber.java.After;
+import io.cucumber.java.AfterAll;
+import io.cucumber.java.PendingException;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 import io.restassured.response.Response;
+import org.junit.jupiter.api.AfterEach;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,7 +50,6 @@ public class CreateRepoStepDefs extends TestBase {
         variables = Map.of(
                 "name",repoName,
                 "visibility",visibility,
-                "ownerId",OWNER,
                 "description", description
         );
 
@@ -63,4 +71,51 @@ public class CreateRepoStepDefs extends TestBase {
     public void iShouldReceiveARepositoryObject() {
         assertThat(response.path("data.createRepository.repository"), not(nullValue()));
     }
+
+    @And("a Description")
+    public void aDescription() {
+        description = "This Repository was created automatically using GraphQl!";
+    }
+
+    @Then("the response should have an ID field")
+    public void theResponseShouldHaveAnIDField() {
+        assertThat(response.path("data.createRepository.repository.id"), not(nullValue()));
+    }
+
+    @And("the Repository Name should match my Input")
+    public void theRepositoryNameShouldMatchMyInput() {
+        assertThat(response.path("data.createRepository.repository.name"), is(repoName));
+    }
+
+    @And("the Repository Description should match my Input")
+    public void theRepositoryDescriptionShouldMatchMyInput() {
+        assertThat(response.path("data.createRepository.repository.description"), is(description));
+    }
+
+    @And("the Creation Timestamp should match today's date")
+    public void theCreationTimestampShouldMatchTodaySDate() {
+
+        String createdAtStr = response.path("data.createRepository.repository.createdAt");
+
+        Instant createdAt = Instant.parse(createdAtStr);
+
+        LocalDate createDate = createdAt.atZone(ZoneOffset.UTC).toLocalDate();
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+
+        assertThat(createDate, is(today));
+    }
+
+    @And("the repository should have a valid url")
+    public void theRepositoryShouldHaveAValidUrl() {
+        assertThat(response.path("data.createRepository.repository.url"),
+                matchesPattern("^https://github\\.com/[^/]+/" + repoName + "$"));
+    }
+
+
+    @After
+    public void cleanUp(){
+
+        GitHubRestClient.deleteRepository(OWNER, repoName);
+    }
+
 }
