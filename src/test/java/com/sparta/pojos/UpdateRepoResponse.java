@@ -1,20 +1,13 @@
 package com.sparta.pojos;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class UpdateRepoResponse {
+public class UpdateRepoResponse{
 
-    private Data data;
+	@JsonProperty("data")
+	private Data data;
 
-    private List<ErrorsItem> errors;
-
-    public Data getData() {
-        return data;
-    }
-
-    public List<ErrorsItem> getErrors() {
-        return errors;
-    }
+	public Data getData(){
+		return data;
+	}
 }
