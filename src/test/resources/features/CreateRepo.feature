@@ -42,4 +42,4 @@ Feature: Create New Repository
     And a valid Repository Name
     And a Description
     When I run the createRepository Query with my Invalid Token
-    Then the response status code should be 401
+    Then the status code of the response should be 401
