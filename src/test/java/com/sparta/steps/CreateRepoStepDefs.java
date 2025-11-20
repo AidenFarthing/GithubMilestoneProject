@@ -26,7 +26,15 @@ public class CreateRepoStepDefs extends TestBase {
     private static String strToken;
     private static String repoName;
 
-    private static String visibility = "PRIVATE";
+    enum Visiblity {
+        PRIVATE,
+        PUBLIC
+    }
+
+
+    private static Visiblity visibility = Visiblity.PRIVATE;
+
+
     private static String description;
 
     private static String query;
@@ -110,6 +118,10 @@ public class CreateRepoStepDefs extends TestBase {
                 matchesPattern("^https://github\\.com/[^/]+/" + repoName + "$"));
     }
 
+    @And("the Visibility should be Private")
+    public void theVisibilityShouldBePrivate() {
+        assertThat(response.path("data.createRepository.repository.visibility"), is("PRIVATE"));
+    }
 
     @After("not @Keep")
     public void cleanUp(){
@@ -124,6 +136,16 @@ public class CreateRepoStepDefs extends TestBase {
     @Then("the response should have a null description")
     public void theResponseShouldHaveAnEmptyDescription() {
         assertThat(response.path("data.createRepository.repository.description"), is(nullValue()));
+    }
+
+    @And("Visibility is Public")
+    public void visibilityIsPublic() {
+        visibility = Visiblity.PUBLIC;
+    }
+
+    @Then("the response should have visibility set to Public")
+    public void theResponseShouldHaveVisibilitySetToPublic() {
+        assertThat(response.path("data.createRepository.repository.visibility"), is("PUBLIC"));
     }
 
     @Given("an Invalid Github Token")
