@@ -3,7 +3,9 @@ Feature: Read Repository
   I want to view an existing repository using the GitHub GraphQL API
   So that I can confirm the repository exists and validate its details
 
+  # -------------------------
   # Happy Path Scenarios
+  # -------------------------
 
   Scenario: H1 - Read an existing repository
     Given I have a valid GitHub token
@@ -13,7 +15,10 @@ Feature: Read Repository
     And the GraphQL response should contain no errors
     And the repository details should be returned
 
+
+  # -------------------------
   # Sad Path Scenarios
+  # -------------------------
 
   Scenario: S1 - Read a repository that does not exist
     Given I have a valid GitHub token

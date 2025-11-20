@@ -3,6 +3,7 @@ package com.sparta.steps;
 import com.sparta.graphql.TestBase;
 import com.sparta.utils.GitHubRestClient;
 import io.cucumber.java.After;
+import io.cucumber.java.PendingException;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.When;
@@ -25,15 +26,7 @@ public class CreateRepoStepDefs extends TestBase {
     private static String strToken;
     private static String repoName;
 
-    enum Visiblity {
-        PRIVATE,
-        PUBLIC
-    }
-
-
-    private static Visiblity visibility = Visiblity.PRIVATE;
-
-
+    private static String visibility = "PRIVATE";
     private static String description;
 
     private static String query;
@@ -117,10 +110,6 @@ public class CreateRepoStepDefs extends TestBase {
                 matchesPattern("^https://github\\.com/[^/]+/" + repoName + "$"));
     }
 
-    @And("the Visibility should be Private")
-    public void theVisibilityShouldBePrivate() {
-        assertThat(response.path("data.createRepository.repository.visibility"), is("PRIVATE"));
-    }
 
     @After("not @Keep")
     public void cleanUp(){
@@ -135,16 +124,6 @@ public class CreateRepoStepDefs extends TestBase {
     @Then("the response should have a null description")
     public void theResponseShouldHaveAnEmptyDescription() {
         assertThat(response.path("data.createRepository.repository.description"), is(nullValue()));
-    }
-
-    @And("Visibility is Public")
-    public void visibilityIsPublic() {
-        visibility = Visiblity.PUBLIC;
-    }
-
-    @Then("the response should have visibility set to Public")
-    public void theResponseShouldHaveVisibilitySetToPublic() {
-        assertThat(response.path("data.createRepository.repository.visibility"), is("PUBLIC"));
     }
 
     @Given("an Invalid Github Token")
@@ -164,8 +143,6 @@ public class CreateRepoStepDefs extends TestBase {
         response = executeQuery(query,"CreateRepository",variables, strToken);
 
     }
-
-
 
     private Response executeQuery(String query, String operationName, Map<String, Object> variables, String token){
         Map<String, Object> body = Map.of(

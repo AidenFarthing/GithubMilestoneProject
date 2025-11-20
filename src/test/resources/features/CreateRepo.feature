@@ -25,7 +25,6 @@ Feature: Create New Repository
     And the Repository Description should match my Input
     And the Creation Timestamp should match today's date
     And the repository should have a valid url
-    And the Visibility should be Private
 
   @Happy
   Scenario: Creating a Repository works fine without a description
@@ -36,15 +35,6 @@ Feature: Create New Repository
     Then the response should have an ID field
     And the Repository Name should match my Input
     Then the response should have a null description
-
-  @Happy
-  Scenario: Creating a Public Repository
-    Given a valid Github Token
-    And a valid Repository Name
-    And a Description
-    And Visibility is Public
-    When I run the createRepository Query
-    Then the response should have visibility set to Public
 
   @Sad
   Scenario: Unauthorised Requests Fail

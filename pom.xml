@@ -49,13 +49,6 @@
             <version>7.14.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>net.serenity-bdd</groupId>
-            <artifactId>serenity-cucumber</artifactId>
-            <version>3.9.8</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
 
