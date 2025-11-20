@@ -25,9 +25,4 @@ public class Config {
     public static String getGitHubBaseUri(){
         return bundle.getString("graphql.url");
     }
-
-    public static String getRESTBaseUri(){
-        return bundle.getString("github.resturi");
-    }
-
 }
