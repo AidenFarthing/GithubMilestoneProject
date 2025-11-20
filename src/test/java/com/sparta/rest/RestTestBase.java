@@ -2,27 +2,35 @@ package com.sparta.rest;
 
 import com.sparta.utils.Config;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class RestTestBase {
 
-    protected static final String BASE_URI = Config.getGitHubBaseUri();
-    protected static final String TOKEN = Config.getToken();
-    protected static final String OWNER = Config.getOwner();
-    protected static final String REPO = Config.getRepo();
+    private static final String REST_URL = Config.getRESTBaseUri();
+    private static final String TOKEN = Config.getToken();
+    private static final String OWNER = Config.getOwner();
 
-    protected static Response deleteRepository() {
+
+    // simple REST deletion
+    protected Response deleteRepository(String repoName) {
         return RestAssured
                 .given()
-                .baseUri(BASE_URI)
+                .baseUri(REST_URL)
                 .header("Authorization", "Bearer " + TOKEN)
-                .contentType(ContentType.JSON)
-                .log().all()
-                .when()
-                .delete("/repos/" + OWNER + "/" + REPO)
-                .then()
-                .log().all()
-                .extract().response();
+                .delete("/repos/" + OWNER + "/" + repoName)
+                .andReturn();
+    }
+
+    // load .graphql file
+    protected String loadGraphQL(String path) {
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(path)) {
+            if (is == null) throw new RuntimeException("Could not find GraphQL file: " + path);
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

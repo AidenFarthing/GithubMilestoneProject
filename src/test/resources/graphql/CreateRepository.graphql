@@ -1,0 +1,17 @@
+mutation CreateRepository {
+    createRepository(
+        input: {
+            description: "Repository created automatically by Graphql"
+            name: "Automated Test Repo"
+            visibility: PRIVATE
+        }
+    ) {
+        repository {
+            id
+            name
+            description
+            createdAt
+            url
+        }
+    }
+}
