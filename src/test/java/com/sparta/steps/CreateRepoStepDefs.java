@@ -3,20 +3,19 @@ package com.sparta.steps;
 import com.sparta.graphql.TestBase;
 import com.sparta.utils.GitHubRestClient;
 import io.cucumber.java.After;
-import io.cucumber.java.AfterAll;
 import io.cucumber.java.PendingException;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,11 +23,11 @@ import static org.hamcrest.Matchers.*;
 
 public class CreateRepoStepDefs extends TestBase {
 
-    private static String validToken;
+    private static String strToken;
     private static String repoName;
 
     private static String visibility = "PRIVATE";
-    private static String description = "";
+    private static String description;
 
     private static String query;
     private static Map<String, Object> variables;
@@ -36,7 +35,7 @@ public class CreateRepoStepDefs extends TestBase {
 
     @Given("a valid Github Token")
     public void aValidGithubToken() {
-        validToken = TOKEN;
+        strToken = TOKEN;
     }
 
     @And("a valid Repository Name")
@@ -57,12 +56,12 @@ public class CreateRepoStepDefs extends TestBase {
 
     }
 
-    @Then("the response status code should be {int}")
+    @Then("the status code of the response should be {int}")
     public void theResponseStatusCodeShouldBe(int statusCode) {
         assertThat(response.statusCode(), is(statusCode));
     }
 
-    @And("the GraphQL response should contain no errors")
+    @And("the response from GraphQL should contain no errors")
     public void theGraphQLResponseShouldContainNoErrors() {
         assertThat(response.jsonPath().getList("errors"), is(nullValue()));
     }
@@ -112,10 +111,60 @@ public class CreateRepoStepDefs extends TestBase {
     }
 
 
-    @After
+    @After("not @Keep")
     public void cleanUp(){
 
         GitHubRestClient.deleteRepository(OWNER, repoName);
     }
+
+    @And("no Description")
+    public void noDescription() {
+        description = "";
+    }
+
+    @Then("the response should have a null description")
+    public void theResponseShouldHaveAnEmptyDescription() {
+        assertThat(response.path("data.createRepository.repository.description"), is(nullValue()));
+    }
+
+    @Given("an Invalid Github Token")
+    public void anInvalidGithubToken() {
+        strToken = "INVALID_TOKEN";
+    }
+
+    @When("I run the createRepository Query with my Invalid Token")
+    public void iRunTheCreateRepositoryQueryWithMyInvalidToken() throws IOException {
+        query = readQuery("CreateRepo.graphql");
+        variables = Map.of(
+                "name",repoName,
+                "visibility",visibility,
+                "description", description
+        );
+
+        response = executeQuery(query,"CreateRepository",variables, strToken);
+
+    }
+
+    private Response executeQuery(String query, String operationName, Map<String, Object> variables, String token){
+        Map<String, Object> body = Map.of(
+                "query", query,
+                "operationName", operationName,
+                "variables", variables
+        );
+
+        return RestAssured
+                .given()
+                .baseUri(BASE_URI)
+                .header("Authorization", "Bearer " + token)
+                .contentType(ContentType.JSON)
+                .body(body)
+                .log().all()
+                .when()
+                .post()
+                .then()
+                .log().all()
+                .extract().response();
+    }
+
 
 }
