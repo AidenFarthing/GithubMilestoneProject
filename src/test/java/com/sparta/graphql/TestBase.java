@@ -16,7 +16,7 @@ public class TestBase {
     protected static String TOKEN = Config.getToken();
     protected static final String OWNER = Config.getOwner();
     protected static final String REPO = Config.getRepo();
-    //protected static final String REPOSITORY_ID = Config.getRepositoryID();
+    protected static final String REPOSITORY_ID = Config.getRepositoryID();
 
     protected static String readQuery(String filename) throws IOException {
         return Files.readString(Paths.get("src/test/resources/graphql/" + filename));
