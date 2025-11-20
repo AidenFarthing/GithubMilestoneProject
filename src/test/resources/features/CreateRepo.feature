@@ -42,4 +42,23 @@ Feature: Create New Repository
     And a valid Repository Name
     And a Description
     When I run the createRepository Query with my Invalid Token
-    Then the response status code should be 401
+    Then the status code of the response should be 401
+
+  @Sad
+  @Keep
+  Scenario: No Duplicate Repository Names
+    Given a valid Github Token
+    And a Repository Name that already Exists
+    And a Description
+    When I run the createRepository Query
+    Then I should receive an error saying Name already exists on this account
+
+  @Sad
+  Scenario: Attempting to Create a Repository with No Name
+    Given a valid Github Token
+    And a Blank repository name
+    And a Description
+    When I run the createRepository Query
+    Then I should receive an error saying Name can't be blank
+
+
