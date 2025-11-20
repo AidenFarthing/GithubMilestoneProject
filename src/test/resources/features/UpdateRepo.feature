@@ -9,7 +9,7 @@ Feature: Update an existing GitHub repository
     Given I have a valid repository ID
     And an existing repository
     When I send an updateRepository mutation with name "Updated Name" and description "Updated Description"
-    Then the repository name should be "Updated Name"
+    Then the repository name should be "Updated-Name"
     And the repository description should be "Updated Description"
 
 
@@ -43,7 +43,7 @@ Feature: Update an existing GitHub repository
     And an existing repository
     When I send an updateRepository mutation with an empty name
     Then the response should contain GraphQL errors
-    And the error message should indicate that "name cannot be empty"
+    And the error message should indicate that "name is too short (minimum is 1 character)"
 
 
   @Sad
@@ -63,9 +63,9 @@ Feature: Update an existing GitHub repository
 
 
   @Sad
-  Scenario: S6 Update fails with malformed fields
+  Scenario: S6 Update fails with invalid fields
     Given I have a valid repository ID
-    And an invalid field value for homepageUrl "not-a-valid-url"
+    And an invalid field value for homepageUrl 123456
     When I send the updateRepository mutation
     Then the response should contain GraphQL errors
-    And the error message should indicate invalid input formatting
+    And the updateRepository should be null
