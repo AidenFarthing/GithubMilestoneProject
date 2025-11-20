@@ -1,6 +1,7 @@
 package com.sparta.steps;
 
 import com.sparta.graphql.TestBase;
+import com.sparta.pojos.ReadRepoResponse;
 import com.sparta.utils.Config;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.*;
@@ -15,9 +16,10 @@ import static org.hamcrest.Matchers.*;
 
 public class ReadStepdefs extends TestBase{
 
-    private Response response;
-    private String query;
-    private Map<String, Object> variables;
+    private  Response response;
+    private  String query;
+    private  Map<String, Object> variables;
+    private  ReadRepoResponse pojoResponse;
 
 
     @Before
@@ -28,6 +30,7 @@ public class ReadStepdefs extends TestBase{
     public void iHaveAValidGitHubToken() throws IOException {
         query = readQuery("ReadRepo.graphql");
         variables = Map.of("owner", OWNER, "name", REPO);
+
     }
 
     @And("an existing repository with a known owner and name")
@@ -37,7 +40,18 @@ public class ReadStepdefs extends TestBase{
     @When("I send a ReadRepository GraphQL query")
     public void iSendAReadRepositoryGraphQLQuery() {
         response = executeQuery(query, "ReadRepo", variables);
+
+        boolean hasErrors = response.jsonPath().get("errors") == null;
+        boolean hasMessage = response.jsonPath().get("message") == null;
+
+        //  Only map to POJO if response is clean
+        if (hasErrors && hasMessage && response.jsonPath().get("data.repository") != null) {
+            pojoResponse = response.as(ReadRepoResponse.class);
+        } else {
+            pojoResponse = null;
+        }
     }
+
 
     @Then("the response status code should be {int}")
     public void theResponseStatusCodeShouldBe(int code) {
@@ -51,9 +65,10 @@ public class ReadStepdefs extends TestBase{
 
     @And("the repository details should be returned")
     public void theRepositoryDetailsShouldBeReturned() {
-        assertThat(response.jsonPath().getString("data.repository.id"), notNullValue());
-        assertThat(response.jsonPath().getString("data.repository.name"), is(REPO));
-        assertThat(response.jsonPath().getString("data.repository.owner.login"), is(OWNER));
+
+        assertThat(pojoResponse.getData().getRepository().getId(), notNullValue());
+        assertThat(pojoResponse.getData().getRepository().getName(), is(REPO));
+        assertThat(pojoResponse.getData().getRepository().getOwner().getLogin(), is(OWNER));
     }
 
     @And("a repository name that does not exist")
@@ -65,6 +80,7 @@ public class ReadStepdefs extends TestBase{
     @Then("the GraphQL response should return a null repository object")
     public void theGraphQLResponseShouldReturnANullRepositoryObject() {
         assertThat(response.jsonPath().get("data.repository"), is(nullValue()));
+        assertThat(response.jsonPath().getString("errors[0].type"), is("NOT_FOUND"));
     }
 
     @Given("I have an invalid or expired GitHub token")
