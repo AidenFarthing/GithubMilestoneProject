@@ -25,4 +25,9 @@ public class Config {
     public static String getGitHubBaseUri(){
         return bundle.getString("github.baseuri");
     }
+
+    public static String getRESTBaseUri(){
+        return bundle.getString("github.resturi");
+    }
+
 }

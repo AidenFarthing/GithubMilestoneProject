@@ -9,16 +9,17 @@ import java.nio.charset.StandardCharsets;
 
 public class RestTestBase {
 
-    private static final String REST_URL = Config.getRESTBaseUri();
-    private static final String TOKEN = Config.getToken();
-    private static final String OWNER = Config.getOwner();
+    public static final String REST_BASE = Config.getRESTBaseUri();
+    public static final String GRAPHQL_BASE = Config.getGitHubBaseUri();
+    public static final String TOKEN = Config.getToken();
+    public static final String OWNER = Config.getOwner();
 
 
     // simple REST deletion
     protected Response deleteRepository(String repoName) {
         return RestAssured
                 .given()
-                .baseUri(REST_URL)
+                .baseUri(REST_BASE)
                 .header("Authorization", "Bearer " + TOKEN)
                 .delete("/repos/" + OWNER + "/" + repoName)
                 .andReturn();
