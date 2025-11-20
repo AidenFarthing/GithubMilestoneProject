@@ -3,7 +3,6 @@ package com.sparta.steps;
 import com.sparta.graphql.TestBase;
 import com.sparta.utils.GitHubRestClient;
 import io.cucumber.java.After;
-import io.cucumber.java.PendingException;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.When;
@@ -165,6 +164,8 @@ public class CreateRepoStepDefs extends TestBase {
         response = executeQuery(query,"CreateRepository",variables, strToken);
 
     }
+
+
 
     private Response executeQuery(String query, String operationName, Map<String, Object> variables, String token){
         Map<String, Object> body = Map.of(
