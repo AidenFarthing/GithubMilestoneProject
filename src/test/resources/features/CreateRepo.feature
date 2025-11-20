@@ -5,6 +5,7 @@ Feature: Create New Repository
   So that I can automate the github process from the start
 
   @Happy
+  @Create
   Scenario: Query runs correctly
     Given a valid Github Token
     And a valid Repository Name
@@ -15,6 +16,7 @@ Feature: Create New Repository
     And I should receive a repository object
 
   @Happy
+  @Create
   Scenario: Returned Repositories must include key fields
     Given a valid Github Token
     And a valid Repository Name
@@ -28,6 +30,7 @@ Feature: Create New Repository
     And the Visibility should be Private
 
   @Happy
+  @Create
   Scenario: Creating a Repository works fine without a description
     Given a valid Github Token
     And a valid Repository Name
@@ -38,6 +41,7 @@ Feature: Create New Repository
     Then the response should have a null description
 
   @Happy
+  @Create
   Scenario: Creating a Public Repository
     Given a valid Github Token
     And a valid Repository Name
@@ -47,6 +51,7 @@ Feature: Create New Repository
     Then the response should have visibility set to Public
 
   @Sad
+  @Create
   Scenario: Unauthorised Requests Fail
     Given an Invalid Github Token
     And a valid Repository Name
@@ -55,6 +60,7 @@ Feature: Create New Repository
     Then the status code of the response should be 401
 
   @Sad
+  @Create
   @Keep
   Scenario: No Duplicate Repository Names
     Given a valid Github Token
@@ -64,6 +70,7 @@ Feature: Create New Repository
     Then I should receive an error saying Name already exists on this account
 
   @Sad
+  @Create
   Scenario: Attempting to Create a Repository with No Name
     Given a valid Github Token
     And a Blank repository name

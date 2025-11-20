@@ -122,7 +122,7 @@ public class CreateRepoStepDefs extends TestBase {
         assertThat(response.path("data.createRepository.repository.visibility"), is("PRIVATE"));
     }
 
-    @After("not @Keep")
+    @After("@Create and not @Keep")
     public void cleanUp(){
         GitHubRestClient.deleteRepository(OWNER, repoName);
     }
