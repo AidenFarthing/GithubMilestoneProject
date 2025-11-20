@@ -13,10 +13,10 @@ import java.util.Map;
 public class TestBase {
 
     protected static final String BASE_URI = Config.getGitHubBaseUri();
-    protected static String TOKEN = Config.getToken();
+    protected static final String TOKEN = Config.getToken();
     protected static final String OWNER = Config.getOwner();
     protected static final String REPO = Config.getRepo();
-    //protected static final String REPOSITORY_ID = Config.getRepositoryID();
+    protected static final String REPOSITORY_ID = Config.getRepositoryID();
 
     protected static String readQuery(String filename) throws IOException {
         return Files.readString(Paths.get("src/test/resources/graphql/" + filename));
