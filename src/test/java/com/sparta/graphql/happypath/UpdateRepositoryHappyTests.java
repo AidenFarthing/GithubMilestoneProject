@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import com.sparta.pojos.UpdateRepoResponse;
 
 import java.io.IOException;
 import java.util.Map;
@@ -15,7 +16,8 @@ import static org.hamcrest.Matchers.*;
 
 public class UpdateRepositoryHappyTests extends TestBase {
 
-    public static Response response;
+    private static Response response;
+    private static UpdateRepoResponse repoResponse;
 
     private static String originalName;
     private static String originalDescription;
@@ -47,9 +49,10 @@ public class UpdateRepositoryHappyTests extends TestBase {
                         "repositoryId", REPOSITORY_ID,
                         "name", newName,
                         "description", newDescription,
-                        "visibility", "PRIVATE"
+                        "visibility", "PUBLIC"
                 )
         );
+        repoResponse = response.as(UpdateRepoResponse.class);
     }
 
     @AfterAll
@@ -80,6 +83,7 @@ public class UpdateRepositoryHappyTests extends TestBase {
     @Test @DisplayName("No graphQL errors")
     void testErrors() {
         assertThat(response.jsonPath().getList("errors"), is(nullValue()));
+        assertThat(repoResponse.getData().getUpdateRepository(),is(notNullValue()));
     }
 
     @Test
@@ -87,9 +91,9 @@ public class UpdateRepositoryHappyTests extends TestBase {
     void testRepositoryNameUpdated() {
 
         String returnedName = response.jsonPath().getString("data.updateRepository.repository.name");
-
-
         assertThat(returnedName, is(newName));
+        assertThat(repoResponse.getData().getUpdateRepository().getRepository().getName(),is(newName)
+        );
     }
 
     @Test
@@ -99,6 +103,7 @@ public class UpdateRepositoryHappyTests extends TestBase {
         String returnedDescription = response.jsonPath().getString("data.updateRepository.repository.description");
 
         assertThat(returnedDescription, is(newDescription));
+        assertThat(repoResponse.getData().getUpdateRepository().getRepository().getDescription(),is(newDescription));
     }
 
     // GitHub’s GraphQL API doesn't allow changing repository visibility, so even if you send the update,
@@ -110,6 +115,7 @@ public class UpdateRepositoryHappyTests extends TestBase {
         String visibility = response.jsonPath().getString("data.updateRepository.repository.visibility");
 
         assertThat(visibility, is("PUBLIC"));
+        assertThat(repoResponse.getData().getUpdateRepository().getRepository().getVisibility(),is("PUBLIC"));
     }
 
 
@@ -117,5 +123,6 @@ public class UpdateRepositoryHappyTests extends TestBase {
     @DisplayName("Repository response should not be null")
     void testRepositoryResponseNotNull() {
         assertThat(response, is(notNullValue()));
+        assertThat(repoResponse,is(notNullValue()));
     }
 }

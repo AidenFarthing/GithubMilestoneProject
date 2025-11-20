@@ -1,13 +1,10 @@
 package com.sparta.pojos;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+public class Data {
 
-public class Data{
+    private UpdateRepository updateRepository;
 
-	@JsonProperty("updateRepository")
-	private UpdateRepository updateRepository;
-
-	public UpdateRepository getUpdateRepository(){
-		return updateRepository;
-	}
+    public UpdateRepository getUpdateRepository() {
+        return updateRepository;
+    }
 }

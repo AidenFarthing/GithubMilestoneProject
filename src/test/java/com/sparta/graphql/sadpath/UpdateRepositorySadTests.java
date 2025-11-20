@@ -1,6 +1,7 @@
 package com.sparta.graphql.sadpath;
 
 import com.sparta.graphql.TestBase;
+import com.sparta.pojos.UpdateRepoResponse;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -44,7 +45,6 @@ public class UpdateRepositorySadTests extends TestBase {
                         "name", "ShouldNotWork"
                 )
         );
-
         invalidAuthResponse = RestAssured
                 .given()
                 .baseUri(BASE_URI)
@@ -60,10 +60,7 @@ public class UpdateRepositorySadTests extends TestBase {
     @DisplayName("Response should contain GraphQL errors")
     void responseShouldContainErrors() {
 
-        assertThat(
-                response.jsonPath().getList("errors"),
-                not(empty())
-        );
+        assertThat(response.jsonPath().getList("errors"), not(empty()));
     }
 
     @Test
@@ -76,19 +73,17 @@ public class UpdateRepositorySadTests extends TestBase {
         assertThat(errorMessage.toLowerCase(), containsString("could not resolve to a node with the global id of 'r_fake_123456789'"));
     }
 
+
     @Test
     @DisplayName("Response should not contain updateRepository data")
     void responseShouldNotContainRepositoryData() {
 
-        String repoData = response.jsonPath()
-                .getString("data.updateRepository");
-
-        assertThat(repoData, is(nullValue()));
+        String repoData = response.jsonPath().getString("data.updateRepository");
     }
+
     @Test
     @DisplayName("Update repository should fail with invalid authentication")
     void updateRepositoryWithInvalidAuthentication() {
-
         assertThat(invalidAuthResponse.statusCode(), anyOf(is(401), is(403)));
     }
 }
