@@ -66,7 +66,7 @@ public class DeletionStepDefs extends RestTestBase {
 
     @Given("a repository named {string} exists")
     public void repo_exists(String repoName) {
-        String mutation = loadGraphQLFile("graphql/CreateRepository.graphql");
+        String mutation = loadGraphQLFile("graphql/CreateRepo.graphql");
 
         Map<String, Object> variables = Map.of(
                 "name", repoName,
