@@ -25,7 +25,15 @@ public class CreateRepoStepDefs extends TestBase {
     private static String strToken;
     private static String repoName;
 
-    private static String visibility = "PRIVATE";
+    enum Visiblity {
+        PRIVATE,
+        PUBLIC
+    }
+
+
+    private static Visiblity visibility = Visiblity.PRIVATE;
+
+
     private static String description;
 
     private static String query;
@@ -109,10 +117,13 @@ public class CreateRepoStepDefs extends TestBase {
                 matchesPattern("^https://github\\.com/[^/]+/" + repoName + "$"));
     }
 
+    @And("the Visibility should be Private")
+    public void theVisibilityShouldBePrivate() {
+        assertThat(response.path("data.createRepository.repository.visibility"), is("PRIVATE"));
+    }
 
     @After("not @Keep")
     public void cleanUp(){
-
         GitHubRestClient.deleteRepository(OWNER, repoName);
     }
 
@@ -124,6 +135,16 @@ public class CreateRepoStepDefs extends TestBase {
     @Then("the response should have a null description")
     public void theResponseShouldHaveAnEmptyDescription() {
         assertThat(response.path("data.createRepository.repository.description"), is(nullValue()));
+    }
+
+    @And("Visibility is Public")
+    public void visibilityIsPublic() {
+        visibility = Visiblity.PUBLIC;
+    }
+
+    @Then("the response should have visibility set to Public")
+    public void theResponseShouldHaveVisibilitySetToPublic() {
+        assertThat(response.path("data.createRepository.repository.visibility"), is("PUBLIC"));
     }
 
     @Given("an Invalid Github Token")
@@ -168,4 +189,23 @@ public class CreateRepoStepDefs extends TestBase {
     }
 
 
+    @And("a Repository Name that already Exists")
+    public void aRepositoryNameThatAlreadyExists() {
+        repoName = "GraphQL-Repository-that-already-exists";
+    }
+
+    @Then("I should receive an error saying Name already exists on this account")
+    public void iShouldReceiveAnErrorSayingNameAlreadyExistsOnThisAccount() {
+        assertThat(response.path("errors[0].message"),is("Name already exists on this account"));
+    }
+
+    @And("a Blank repository name")
+    public void aBlankRepositoryName() {
+        repoName = "";
+    }
+
+    @Then("I should receive an error saying Name can't be blank")
+    public void iShouldReceiveAnErrorSayingNameCanTBeBlank() {
+        assertThat(response.path("errors[0].message"),is("Name can't be blank, Name is too short (minimum is 1 character)"));
+    }
 }
