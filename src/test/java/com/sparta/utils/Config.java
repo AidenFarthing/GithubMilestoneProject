@@ -11,18 +11,18 @@ public class Config {
     }
 
     public static String getOwner(){
-        return bundle.getString("github.owner");
+        return bundle.getString("repository.owner");
     }
 
     public static String getRepo(){
-        return bundle.getString("github.repo");
+        return bundle.getString("repository.name");
     }
 
     public static String getRepositoryID(){
-        return bundle.getString("github.repositoryID");
+        return bundle.getString("repository.id");
     }
 
     public static String getGitHubBaseUri(){
-        return bundle.getString("github.baseuri");
+        return bundle.getString("graphql.url");
     }
 }
