@@ -1,6 +1,10 @@
 package com.sparta.steps;
 
 import com.sparta.graphql.TestBase;
+import com.sparta.utils.Config;
+import com.sparta.utils.GitHubRestClient;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -20,10 +24,43 @@ public class UpdateRepositoryStepdefs extends TestBase {
 
     private final Map<String, Object> variables = new HashMap<>();
     private Response response;
+    private static String tempRepoName;
+    private static String tempRepoId;
+
+    @Before
+    public void resetTempRepo() throws IOException {
+        TOKEN = Config.getToken();
+
+        String createQuery = readQuery("CreateRepo.graphql");
+        tempRepoName = "update-test-repo-" + System.currentTimeMillis();
+
+        Map<String, Object> vars = Map.of(
+                "name", tempRepoName,
+                "visibility", "PRIVATE",
+                "description", "Temp repo for Read tests"
+        );
+        Response createResponse = TestBase.executeQuery(
+                createQuery,
+                "CreateRepository",
+                vars
+        );
+
+        tempRepoId = createResponse.jsonPath().getString("data.createRepository.repository.id");
+
+    }
+
+
+    @After
+    public void deleteTempRepo() {
+        if (tempRepoName != null && tempRepoId != null) {
+            GitHubRestClient.deleteRepository(OWNER, tempRepoName);
+        }
+    }
 
     @Given("I have a valid repository ID")
     public void iHaveAValidRepositoryID() {
-        variables.put("repositoryId", REPOSITORY_ID);
+        variables.clear();
+        variables.put("repositoryId", tempRepoId);
     }
 
     @And("an existing repository")
@@ -117,6 +154,7 @@ public class UpdateRepositoryStepdefs extends TestBase {
 
     @Given("I have an invalid or expired token")
     public void iHaveAnInvalidOrExpiredToken() {
+        TOKEN = "INVALID_TOKEN_123";
     }
 
     @When("I send the updateRepository mutation with invalid authentication")
