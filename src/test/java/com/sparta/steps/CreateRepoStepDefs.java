@@ -122,11 +122,6 @@ public class CreateRepoStepDefs extends TestBase {
         assertThat(response.path("data.createRepository.repository.visibility"), is("PRIVATE"));
     }
 
-    @After("@Create and not @Keep")
-    public void cleanUp(){
-        GitHubRestClient.deleteRepository(OWNER, repoName);
-    }
-
     @And("no Description")
     public void noDescription() {
         description = "";
@@ -217,5 +212,10 @@ public class CreateRepoStepDefs extends TestBase {
     @Then("I should receive an error saying Name can't be blank")
     public void iShouldReceiveAnErrorSayingNameCanTBeBlank() {
         assertThat(response.path("errors[0].message"),is("Name can't be blank, Name is too short (minimum is 1 character)"));
+    }
+
+    @After("@Create and not @Keep")
+    public void cleanUp(){
+        GitHubRestClient.deleteRepository(OWNER, repoName);
     }
 }
