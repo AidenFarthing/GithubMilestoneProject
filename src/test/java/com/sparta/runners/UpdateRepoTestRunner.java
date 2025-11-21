@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
-        features = "src/test/resources/features/ReadRepo.feature",
+        features = "src/test/resources/features/CreateRepo.feature",
         glue = "com.sparta.steps",
         plugin = {
                 "pretty",
@@ -15,5 +15,6 @@ import org.junit.runner.RunWith;
         },
         publish = true
 )
-public class ReadRepoTestRunner {
+
+public class UpdateRepoTestRunner {
 }
