@@ -95,6 +95,11 @@ These files are read at runtime from the step definitions, allowing you to:
 
 ---
 
+## Class Diagram 
+<img width="2653" height="1795" alt="image" src="https://github.com/user-attachments/assets/97a060ae-6554-4cb0-89db-d7bde1595d99" />
+
+
+
 ## ▶️ Running the Tests
 
 You can run the test framework in two ways:
