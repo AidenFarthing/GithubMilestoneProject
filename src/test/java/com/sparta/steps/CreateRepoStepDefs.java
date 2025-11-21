@@ -190,8 +190,18 @@ public class CreateRepoStepDefs extends TestBase {
 
 
     @And("a Repository Name that already Exists")
-    public void aRepositoryNameThatAlreadyExists() {
+    public void aRepositoryNameThatAlreadyExists() throws IOException {
+
         repoName = "GraphQL-Repository-that-already-exists";
+        description = "A repository that exists so that I can try and hopefully fail to duplicate it";
+        query = readQuery("CreateRepo.graphql");
+        variables = Map.of(
+                "name",repoName,
+                "visibility",visibility,
+                "description", description
+        );
+
+        response = executeQuery(query,"CreateRepository",variables);
     }
 
     @Then("I should receive an error saying Name already exists on this account")

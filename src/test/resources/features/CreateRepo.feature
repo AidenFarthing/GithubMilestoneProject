@@ -61,7 +61,6 @@ Feature: Create New Repository
 
   @Sad
   @Create
-  @Keep
   Scenario: No Duplicate Repository Names
     Given a valid Github Token
     And a Repository Name that already Exists
