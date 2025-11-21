@@ -1,0 +1,80 @@
+Feature: Create New Repository
+
+  As a Github user
+  I want to create repositories using GraphQL
+  So that I can automate the github process from the start
+
+  @Happy
+  @Create
+  Scenario: Query runs correctly
+    Given a valid Github Token
+    And a valid Repository Name
+    And a Description
+    When I run the createRepository Query
+    Then the status code of the response should be 200
+    And the response from GraphQL should contain no errors
+    And I should receive a repository object
+
+  @Happy
+  @Create
+  Scenario: Returned Repositories must include key fields
+    Given a valid Github Token
+    And a valid Repository Name
+    And a Description
+    When I run the createRepository Query
+    Then the response should have an ID field
+    And the Repository Name should match my Input
+    And the Repository Description should match my Input
+    And the Creation Timestamp should match today's date
+    And the repository should have a valid url
+    And the Visibility should be Private
+
+  @Happy
+  @Create
+  Scenario: Creating a Repository works fine without a description
+    Given a valid Github Token
+    And a valid Repository Name
+    And no Description
+    When I run the createRepository Query
+    Then the response should have an ID field
+    And the Repository Name should match my Input
+    Then the response should have a null description
+
+  @Happy
+  @Create
+  Scenario: Creating a Public Repository
+    Given a valid Github Token
+    And a valid Repository Name
+    And a Description
+    And Visibility is Public
+    When I run the createRepository Query
+    Then the response should have visibility set to Public
+
+  @Sad
+  @Create
+  Scenario: Unauthorised Requests Fail
+    Given an Invalid Github Token
+    And a valid Repository Name
+    And a Description
+    When I run the createRepository Query with my Invalid Token
+    Then the status code of the response should be 401
+
+  @Sad
+  @Create
+  Scenario: No Duplicate Repository Names
+    Given a valid Github Token
+    And a Repository Name that already Exists
+    And a Description
+    When I run the createRepository Query
+    Then I should receive an error saying Name already exists on this account
+
+  @Sad
+  @Create
+  Scenario: Attempting to Create a Repository with No Name
+    Given a valid Github Token
+    And a Blank repository name
+    And a Description
+    When I run the createRepository Query
+    Then I should receive an error saying Name can't be blank
+
+
