@@ -6,14 +6,14 @@ import org.junit.runner.RunWith;
 
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
-        features = "src/test/resources/features/ReadRepo.feature",
+        features = "src/test/resources/features",
         glue = "com.sparta.steps",
+        //tags = "@Happy", will only test happy cases
         plugin = {
                 "pretty",
-                "html:target/repository-report.html",
-                "json:target/repository-report.json"
+                "html:target/testReport.html",
+                "json:target/jsonReport.json"
         },
         publish = true
-)
-public class ReadRepoTestRunner {
+) class TestRunner {
 }

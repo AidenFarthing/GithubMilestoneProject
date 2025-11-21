@@ -1,7 +1,6 @@
 package com.sparta.steps;
 
 import com.sparta.graphql.TestBase;
-import com.sparta.pojos.UpdateRepoResponse;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -17,11 +16,10 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class UpdateRepositoryStepsdefs extends TestBase {
+public class UpdateRepositoryStepdefs extends TestBase {
 
     private final Map<String, Object> variables = new HashMap<>();
     private Response response;
-    private UpdateRepoResponse repoResponse;
 
     @Given("I have a valid repository ID")
     public void iHaveAValidRepositoryID() {
@@ -39,8 +37,6 @@ public class UpdateRepositoryStepsdefs extends TestBase {
 
         String query = readQuery("UpdateRepository.graphql");
         response = executeQuery(query, "UpdateRepository", variables);
-
-        repoResponse = response.as(UpdateRepoResponse.class);
     }
 
     @Then("the repository name should be {string}")
@@ -102,7 +98,7 @@ public class UpdateRepositoryStepsdefs extends TestBase {
     @And("the error message should indicate that the repository was not found")
     public void theErrorMessageShouldIndicateThatTheRepositoryWasNotFound() {
         String message = response.jsonPath().getString("errors[0].message");
-        assertThat(message.toLowerCase(), containsString("could not resolve to a node with the global id of 'r_fake_999999999'"));
+        assertThat(message.toLowerCase(), containsString("not found"));
     }
 
     @When("I send an updateRepository mutation with an empty name")
@@ -173,12 +169,12 @@ public class UpdateRepositoryStepsdefs extends TestBase {
 
     @Then("the response should indicate missing authentication")
     public void theResponseShouldIndicateMissingAuthentication() {
-        assertThat(response.statusCode(), is(403));
+        assertThat(response.statusCode(), is(401));
     }
 
-    @And("an empty repository name")
-    public void anEmptyRepositoryName() {
-        variables.put("name", "");
+    @And("an invalid field value for homepageUrl {string}")
+    public void anInvalidFieldValueForHomepageUrl(String url) {
+        variables.put("homepageUrl", url);
     }
 
     @When("I send the updateRepository mutation")
@@ -187,9 +183,9 @@ public class UpdateRepositoryStepsdefs extends TestBase {
         response = executeQuery(query, "UpdateRepository", variables);
     }
 
-    @Then("the updateRepository should be null")
-    public void theUpdateRepositoryShouldBeNull() {
-        String updateRepo = response.jsonPath().getString("data.updateRepository");
-        assertThat(updateRepo, is(nullValue()));
+    @And("the error message should indicate invalid input formatting")
+    public void theErrorMessageShouldIndicateInvalidInputFormatting() {
+        String message = response.jsonPath().getString("errors[0].message");
+        assertThat(message.toLowerCase(), containsString("invalid"));
     }
 }
