@@ -120,7 +120,36 @@ Use the main runner:
 
 - `TestRunner` – executes **all feature files** in one go
 
+## 🤝 How Others Can Contribute
 
+If another team wants to continue developing this project, they can follow these simple steps:
+
+### 1️⃣ Add New Features
+- Create new `.feature` files in `src/test/resources/features/`
+- Write matching step definitions in `src/test/java/com/sparta/steps/`
+- Add any required GraphQL queries/mutations in `src/test/resources/graphql/`
+
+### 2️⃣ Extend Test Coverage
+- Add new scenarios to existing feature files  
+- Follow the current patterns:  
+  - Temporary repo created in `@Before`  
+  - Deleted in `@After`  
+  - Config loaded from `config.properties`
+
+### 3️⃣ Add or Update POJOs
+If new fields are added in GitHub responses, update or create POJOs in: src/test/java/com/sparta/pojos/
+
+### 4️⃣ Maintain Code Quality
+- Use the existing package structure  
+- Keep logic inside the Base classes for REST/GraphQL  
+- Use pull requests for all changes
+
+### 5️⃣ Git Workflow
+- Create branches using: `feature/<your-name-or-task>`  
+- Open a PR into the `dev` branch  
+- Ensure all tests pass before merging
+
+This makes it easy for any future group to expand, maintain, or improve the framework.
 
 ## ✅ Summary
 
