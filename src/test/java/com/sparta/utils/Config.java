@@ -14,14 +14,6 @@ public class Config {
         return bundle.getString("repository.owner");
     }
 
-        public static String getRepo(){
-            return bundle.getString("repository.name");
-        }
-
-        public static String getRepositoryID(){
-            return bundle.getString("repository.id");
-        }
-
     public static String getGitHubBaseUri(){
         return bundle.getString("graphql.url");
     }
