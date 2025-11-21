@@ -122,11 +122,6 @@ public class CreateRepoStepDefs extends TestBase {
         assertThat(response.path("data.createRepository.repository.visibility"), is("PRIVATE"));
     }
 
-    @After("not @Keep")
-    public void cleanUp(){
-        GitHubRestClient.deleteRepository(OWNER, repoName);
-    }
-
     @And("no Description")
     public void noDescription() {
         description = "";
@@ -190,8 +185,18 @@ public class CreateRepoStepDefs extends TestBase {
 
 
     @And("a Repository Name that already Exists")
-    public void aRepositoryNameThatAlreadyExists() {
+    public void aRepositoryNameThatAlreadyExists() throws IOException {
+
         repoName = "GraphQL-Repository-that-already-exists";
+        description = "A repository that exists so that I can try and hopefully fail to duplicate it";
+        query = readQuery("CreateRepo.graphql");
+        variables = Map.of(
+                "name",repoName,
+                "visibility",visibility,
+                "description", description
+        );
+
+        response = executeQuery(query,"CreateRepository",variables);
     }
 
     @Then("I should receive an error saying Name already exists on this account")
@@ -207,5 +212,10 @@ public class CreateRepoStepDefs extends TestBase {
     @Then("I should receive an error saying Name can't be blank")
     public void iShouldReceiveAnErrorSayingNameCanTBeBlank() {
         assertThat(response.path("errors[0].message"),is("Name can't be blank, Name is too short (minimum is 1 character)"));
+    }
+
+    @After("@Create and not @Keep")
+    public void cleanUp(){
+        GitHubRestClient.deleteRepository(OWNER, repoName);
     }
 }
