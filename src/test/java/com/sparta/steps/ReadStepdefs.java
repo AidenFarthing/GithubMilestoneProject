@@ -3,6 +3,9 @@ package com.sparta.steps;
 import com.sparta.graphql.TestBase;
 import com.sparta.pojos.ReadRepoResponse;
 import com.sparta.utils.Config;
+import com.sparta.utils.GitHubRestClient;
+import io.cucumber.java.After;
+import io.cucumber.java.AfterAll;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.*;
 import io.restassured.response.Response;
@@ -21,15 +24,41 @@ public class ReadStepdefs extends TestBase{
     private  Map<String, Object> variables;
     private  ReadRepoResponse pojoResponse;
 
+    private static String tempRepoName;
 
     @Before
-    public void resetToken() {
+    public void resetTempRepo() throws IOException {
         TOKEN = Config.getToken();
+
+        String createQuery = readQuery("CreateRepo.graphql");
+        tempRepoName = "read-test-repo-" + System.currentTimeMillis();
+
+        Map<String, Object> vars = Map.of(
+                "name", tempRepoName,
+                "visibility", "PRIVATE",
+                "description", "Temp repo for Read tests"
+        );
+        Response createResponse = TestBase.executeQuery(
+                createQuery,
+                "CreateRepository",
+                vars
+        );
+
     }
+
+    @After
+    public void deleteTempRepo() {
+        if (tempRepoName != null) {
+            GitHubRestClient.deleteRepository(OWNER, tempRepoName);
+        }
+    }
+
+
+
     @Given("I have a valid GitHub token")
     public void iHaveAValidGitHubToken() throws IOException {
         query = readQuery("ReadRepo.graphql");
-        variables = Map.of("owner", OWNER, "name", REPO);
+        variables = Map.of("owner", OWNER, "name", tempRepoName);
 
     }
 
@@ -67,7 +96,7 @@ public class ReadStepdefs extends TestBase{
     public void theRepositoryDetailsShouldBeReturned() {
 
         assertThat(pojoResponse.getData().getRepository().getId(), notNullValue());
-        assertThat(pojoResponse.getData().getRepository().getName(), is(REPO));
+        assertThat(pojoResponse.getData().getRepository().getName(), is(tempRepoName));
         assertThat(pojoResponse.getData().getRepository().getOwner().getLogin(), is(OWNER));
     }
 
@@ -87,7 +116,7 @@ public class ReadStepdefs extends TestBase{
     public void iHaveAnInvalidOrExpiredGitHubToken() throws IOException {
         query = readQuery("ReadRepo.graphql");
         TOKEN = "invalid_token_value";
-        variables = Map.of("owner", OWNER, "name", REPO);
+        variables = Map.of("owner", OWNER, "name", tempRepoName);
     }
 
     @Then("the response should return an authentication error")
@@ -99,7 +128,7 @@ public class ReadStepdefs extends TestBase{
     @Given("I have no authentication header")
     public void iHaveNoAuthenticationHeader() throws IOException {
         query = readQuery("ReadRepo.graphql");
-        variables = Map.of("owner", OWNER, "name", REPO);
+        variables = Map.of("owner", OWNER, "name", tempRepoName);
         TOKEN = "";
     }
 
@@ -117,4 +146,6 @@ public class ReadStepdefs extends TestBase{
     public void theGraphQLResponseShouldIncludeValidationErrors() {
         assertThat(response.jsonPath().getString("errors[0].message"), notNullValue());
     }
+
+
 }
